@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Athlete Command</title>
+
+<!-- iOS PWA home screen tags -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Athlete">
+<meta name="theme-color" content="#0a0a0f">
+
+<!-- iOS home screen icon (generated inline as SVG → data URI) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMGEwYTBmIi8+PHBhdGggZD0iTTkwIDE1TDExMCA1NUw5MCA0NUw3MCA1NVoiIGZpbGw9IiNlOGZmNDciLz48Y2lyY2xlIGN4PSI5MCIgY3k9IjEwMCIgcj0iMzUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2U4ZmY0NyIgc3Ryb2tlLXdpZHRoPSI2Ii8+PHBhdGggZD0iTTYwIDEzNUw3NSAxMTBMMTAwIDEyNUwxMjAgMTAwIiBzdHJva2U9IiNmZjZiNDciIHN0cm9rZS13aWR0aD0iNSIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHRleHQgeD0iOTAiIHk9IjE3MCIgZm9udC1mYW1pbHk9IidCZWJhcyBOZXVlJywgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZmlsbD0iI2U4ZmY0NyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QVRMRVRFPC90ZXh0Pjwvc3ZnPg==">
+
+<!-- iOS Splash screens for common iPhone sizes -->
+<meta name="msapplication-TileColor" content="#0a0a0f">
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* iOS safe area support */
+  body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+</style>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --card: #16161f;
+    --border: #1e1e2e;
+    --accent: #e8ff47;
+    --accent2: #47c8ff;
+    --accent3: #ff6b47;
+    --text: #e8e8f0;
+    --muted: #6b6b85;
+    --run: #ff6b47;
+    --ride: #47c8ff;
+    --swim: #a78bfa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(232,255,71,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,255,71,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 36px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .logo-block h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 6vw, 56px);
+    letter-spacing: 2px;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  .logo-block p {
+    font-size: 13px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  .strava-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fc4c02;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .strava-badge svg { width: 16px; height: 16px; }
+
+  /* Status bar */
+  .status-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 20px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    animation: fadeDown 0.6s 0.1s ease both;
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .status-text { flex: 1; }
+  .status-text span { color: var(--accent); }
+
+  /* Loading state */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: opacity 0.5s ease;
+  }
+
+  .loading-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .loader-ring {
+    width: 60px; height: 60px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 16px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-overlay p {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .loading-overlay p span {
+    color: var(--accent);
+  }
+
+  /* Stats grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .stat-card.run::before { background: var(--run); }
+  .stat-card.ride::before { background: var(--ride); }
+  .stat-card.swim::before { background: var(--swim); }
+  .stat-card.all::before { background: var(--accent); }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    line-height: 1;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .stat-card.run .stat-value { color: var(--run); }
+  .stat-card.ride .stat-value { color: var(--ride); }
+  .stat-card.swim .stat-value { color: var(--swim); }
+  .stat-card.all .stat-value { color: var(--accent); }
+
+  .stat-unit {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .stat-change {
+    position: absolute;
+    top: 20px; right: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .stat-change.up { background: rgba(232,255,71,0.1); color: var(--accent); }
+  .stat-change.down { background: rgba(255,107,71,0.1); color: var(--run); }
+
+  /* Two column layout */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+
+  @media (max-width: 700px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  /* Panel */
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    animation: fadeUp 0.5s 0.2s ease both;
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .panel-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    color: var(--text);
+  }
+
+  .panel-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+  }
+
+  /* Activity list */
+  .activity-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .activity-item:last-child { border-bottom: none; }
+
+  .activity-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .activity-icon.run { background: rgba(255,107,71,0.15); }
+  .activity-icon.ride { background: rgba(71,200,255,0.15); }
+  .activity-icon.swim { background: rgba(167,139,250,0.15); }
+  .activity-icon.walk { background: rgba(232,255,71,0.10); }
+
+  .activity-info { flex: 1; min-width: 0; }
+
+  .activity-name {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+  }
+
+  .activity-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .activity-stats {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .activity-dist {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.5px;
+  }
+
+  .activity-pace {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* Weekly chart */
+  .chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 100px;
+    margin-top: 12px;
+  }
+
+  .bar-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+
+  .bar {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    min-height: 4px;
+    transition: height 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .bar-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* Coaching panel */
+  .coaching-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.5s 0.3s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .coaching-panel::after {
+    content: 'AI';
+    position: absolute;
+    top: -10px; right: -10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    color: rgba(232,255,71,0.03);
+    pointer-events: none;
+  }
+
+  .coaching-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .coach-avatar {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--accent), #a3e635);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .coach-info h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .coach-info p {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .coaching-content {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #c8c8dc;
+    min-height: 60px;
+  }
+
+  .coaching-content.loading {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* Cursor blink */
+  .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 14px;
+    background: var(--accent);
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 1s infinite;
+  }
+
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  /* Insight cards */
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 600px) {
+    .insights-grid { grid-template-columns: 1fr; }
+  }
+
+  .insight-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+
+  .insight-icon { font-size: 20px; margin-bottom: 8px; }
+
+  .insight-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--accent);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .insight-text {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Workout plan */
+  .week-plan {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  @media (max-width: 600px) {
+    .week-plan { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .day-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+
+  .day-card.active {
+    border-color: var(--accent);
+    background: rgba(232,255,71,0.05);
+  }
+
+  .day-card.rest {
+    opacity: 0.5;
+  }
+
+  .day-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .day-icon { font-size: 18px; margin-bottom: 4px; }
+
+  .day-type {
+    font-size: 9px;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Error state */
+  .error-msg {
+    background: rgba(255,107,71,0.1);
+    border: 1px solid rgba(255,107,71,0.3);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-size: 13px;
+    color: var(--run);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 20px;
+  }
+
+  /* Fitness score */
+  .fitness-score-wrap {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .score-ring {
+    position: relative;
+    width: 80px; height: 80px;
+    flex-shrink: 0;
+  }
+
+  .score-ring svg { transform: rotate(-90deg); }
+
+  .score-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    color: var(--accent);
+  }
+
+  .score-details h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .score-details p {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.5px;
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<!-- iOS Splash Screen -->
+<div id="splashScreen" style="
+  position: fixed; inset: 0; z-index: 999;
+  background: #0a0a0f;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px;
+  transition: opacity 0.6s ease;
+">
+  <svg width="90" height="90" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+    <rect width="180" height="180" rx="40" fill="#0a0a0f"/>
+    <path d="M90 15L110 55L90 45L70 55Z" fill="#e8ff47"/>
+    <circle cx="90" cy="100" r="35" fill="none" stroke="#e8ff47" stroke-width="6"/>
+    <path d="M60 135L75 110L100 125L120 100" stroke="#ff6b47" stroke-width="5" fill="none" stroke-linecap="round"/>
+  </svg>
+  <div style="font-family:'Bebas Neue',sans-serif; font-size: 36px; letter-spacing: 4px; color: #e8ff47;">ATHLETE</div>
+  <div style="font-family:'DM Mono',monospace; font-size: 11px; letter-spacing: 2px; color: #6b6b85;">COMMAND CENTER</div>
+</div>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loader-ring"></div>
+  <p>Fetching Strava data<span id="loadingDots">...</span></p>
+</div>
+
+<div class="container">
+  <header>
+    <div class="logo-block">
+      <h1>ATHLETE<br>COMMAND</h1>
+      <p>POWERED BY STRAVA + CLAUDE AI</p>
+    </div>
+    <div class="strava-badge">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>
+      STRAVA CONNECTED
+    </div>
+  </header>
+
+  <div class="status-bar">
+    <div class="status-dot"></div>
+    <span class="status-text">Live data from Strava · AI coaching by <span>Claude</span></span>
+    <span id="lastUpdated" style="color: var(--muted)">—</span>
+  </div>
+
+  <div id="errorDiv" style="display:none" class="error-msg"></div>
+
+  <!-- Stat Cards -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card all">
+      <div class="stat-label">Total Activities</div>
+      <div class="stat-value" id="totalActivities">—</div>
+      <div class="stat-unit">this year</div>
+    </div>
+    <div class="stat-card run">
+      <div class="stat-label">Run Distance</div>
+      <div class="stat-value" id="runDist">—</div>
+      <div class="stat-unit" id="runDistUnit">km this year</div>
+    </div>
+    <div class="stat-card ride">
+      <div class="stat-label">Ride Distance</div>
+      <div class="stat-value" id="rideDist">—</div>
+      <div class="stat-unit" id="rideDistUnit">km this year</div>
+    </div>
+    <div class="stat-card all">
+      <div class="stat-label">Total Elevation</div>
+      <div class="stat-value" id="totalElev">—</div>
+      <div class="stat-unit">meters gained</div>
+    </div>
+  </div>
+
+  <!-- Two column: recent + weekly chart -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">RECENT ACTIVITIES</div>
+        <span class="panel-badge" style="background: rgba(232,255,71,0.1); color: var(--accent)">LATEST</span>
+      </div>
+      <div id="activityList">
+        <div style="color: var(--muted); font-size: 13px;">Loading...</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">WEEKLY VOLUME</div>
+        <span class="panel-badge" style="background: rgba(71,200,255,0.1); color: var(--accent2)">4 WKS</span>
+      </div>
+      <div class="chart-bars" id="weeklyChart">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Coaching Panel -->
+  <div class="coaching-panel">
+    <div class="coaching-header">
+      <div class="coach-avatar">🤖</div>
+      <div class="coach-info">
+        <h3>AI Performance Coach</h3>
+        <p>ANALYZING YOUR STRAVA DATA</p>
+      </div>
+    </div>
+    <div class="coaching-content loading" id="coachingText">
+      Analyzing your training data<span class="cursor"></span>
+    </div>
+    <div class="insights-grid" id="insightsGrid" style="display:none">
+      <div class="insight-card">
+        <div class="insight-icon">📈</div>
+        <div class="insight-title">Volume Trend</div>
+        <div class="insight-text" id="insightVolume">—</div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-icon">⚡</div>
+        <div class="insight-title">Intensity</div>
+        <div class="insight-text" id="insightIntensity">—</div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-icon">🎯</div>
+        <div class="insight-title">Focus Area</div>
+        <div class="insight-text" id="insightFocus">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weekly Plan -->
+  <div class="panel" style="margin-bottom: 28px; animation: fadeUp 0.5s 0.4s ease both;">
+    <div class="panel-header">
+      <div class="panel-title">THIS WEEK'S TRAINING PLAN</div>
+      <span class="panel-badge" style="background: rgba(167,139,250,0.1); color: var(--swim)">AI GENERATED</span>
+    </div>
+    <div class="week-plan" id="weekPlan">
+      <div style="color: var(--muted); font-size: 12px; grid-column: span 7;">Generating plan...</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Fade out splash after fonts load
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const splash = document.getElementById('splashScreen');
+    if (splash) { splash.style.opacity = '0'; setTimeout(() => splash.remove(), 600); }
+  }, 1200);
+});
+
+const STRAVA_MCP = "https://mcp.strava.com/mcp";
+
+// ─── Strava via Claude API ───────────────────────────────────────────────────
+async function fetchStravaData(prompt) {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1000,
+      system: `You are a data retrieval assistant. 
+Use the Strava MCP tools to fetch the user's data.
+Always return ONLY valid JSON, no markdown, no explanation.
+When fetching activities, get at least 20 recent activities.
+For athlete stats, get the authenticated athlete's stats.`,
+      messages: [{ role: "user", content: prompt }],
+      mcp_servers: [{ type: "url", url: STRAVA_MCP, name: "strava" }]
+    })
+  });
+  const data = await res.json();
+  // Extract tool results and text
+  const toolResults = (data.content || [])
+    .filter(b => b.type === "mcp_tool_result")
+    .map(b => b.content?.[0]?.text || "")
+    .join("\n");
+  const textBlocks = (data.content || [])
+    .filter(b => b.type === "text")
+    .map(b => b.text)
+    .join("\n");
+  return { toolResults, textBlocks, raw: data.content || [] };
+}
+
+// ─── Fetch athlete + activities ──────────────────────────────────────────────
+async function loadStravaStats() {
+  try {
+    // Parallel: get athlete stats + recent activities
+    const [statsRes, activitiesRes] = await Promise.all([
+      fetchStravaData(`Use Strava MCP to get the authenticated athlete profile and their all-time stats. 
+Return JSON: { "athlete": { "firstname": "...", "lastname": "...", "city": "...", "country": "..." }, "stats": { "recent_run_totals": { "distance": 0, "count": 0, "elevation_gain": 0, "moving_time": 0 }, "recent_ride_totals": { "distance": 0, "count": 0, "elevation_gain": 0 }, "ytd_run_totals": { "distance": 0, "count": 0 }, "ytd_ride_totals": { "distance": 0, "count": 0 }, "all_run_totals": { "distance": 0, "count": 0 }, "all_ride_totals": { "distance": 0, "count": 0 } } }`),
+      fetchStravaData(`Use Strava MCP to get the 20 most recent activities for the authenticated athlete.
+Return JSON array of activities: [{ "name": "...", "type": "Run|Ride|Swim|Walk", "distance": 1234.5, "moving_time": 3600, "total_elevation_gain": 50, "start_date_local": "2024-01-01T10:00:00Z", "average_speed": 3.5, "suffer_score": 40 }]`)
+    ]);
+
+    let athlete = {}, stats = {}, activities = [];
+
+    // Parse stats
+    try {
+      const statsText = statsRes.toolResults + statsRes.textBlocks;
+      const statsClean = statsText.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(statsClean.substring(statsClean.indexOf('{')));
+      athlete = parsed.athlete || {};
+      stats = parsed.stats || {};
+    } catch(e) {
+      console.warn('Stats parse error', e);
+    }
+
+    // Parse activities
+    try {
+      const actText = activitiesRes.toolResults + activitiesRes.textBlocks;
+      const actClean = actText.replace(/```json|```/g, '').trim();
+      const arrStart = actClean.indexOf('[');
+      if (arrStart !== -1) {
+        activities = JSON.parse(actClean.substring(arrStart));
+      }
+    } catch(e) {
+      console.warn('Activities parse error', e);
+    }
+
+    return { athlete, stats, activities };
+
+  } catch(err) {
+    throw new Error("Failed to load Strava data: " + err.message);
+  }
+}
+
+// ─── Fetch AI coaching ────────────────────────────────────────────────────────
+async function fetchCoaching(athlete, stats, activities) {
+  const summary = {
+    athlete,
+    recentRuns: stats.recent_run_totals,
+    recentRides: stats.recent_ride_totals,
+    ytdRuns: stats.ytd_run_totals,
+    ytdRides: stats.ytd_ride_totals,
+    recentActivities: activities.slice(0, 10).map(a => ({
+      type: a.type,
+      distance: (a.distance / 1000).toFixed(1) + 'km',
+      time: Math.round(a.moving_time / 60) + 'min',
+      elevation: a.total_elevation_gain + 'm'
+    }))
+  };
+
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1000,
+      system: `You are an elite sports performance coach. 
+Analyze Strava data and provide personalized coaching advice.
+Return ONLY valid JSON, no markdown, no extra text.`,
+      messages: [{
+        role: "user",
+        content: `Analyze this athlete's data and provide coaching:
+${JSON.stringify(summary, null, 2)}
+
+Return JSON:
+{
+  "summary": "2-3 sentence overall assessment of their fitness and training",
+  "volumeTrend": "1 sentence about their recent training volume trend",
+  "intensityAdvice": "1 sentence about intensity balance",
+  "focusArea": "1 sentence on the single most important thing to improve",
+  "weekPlan": [
+    { "day": "Mon", "type": "Run", "icon": "🏃", "description": "Easy 5km" },
+    { "day": "Tue", "type": "Rest", "icon": "😴", "description": "Recovery" },
+    { "day": "Wed", "type": "Intervals", "icon": "⚡", "description": "Tempo 6km" },
+    { "day": "Thu", "type": "Cross", "icon": "🚴", "description": "Easy ride" },
+    { "day": "Fri", "type": "Rest", "icon": "😴", "description": "Rest" },
+    { "day": "Sat", "type": "Long Run", "icon": "🏃", "description": "Long 10km" },
+    { "day": "Sun", "type": "Recovery", "icon": "🧘", "description": "Yoga/stretch" }
+  ]
+}`
+      }]
+    })
+  });
+
+  const data = await res.json();
+  const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+  const clean = text.replace(/```json|```/g, '').trim();
+  return JSON.parse(clean.substring(clean.indexOf('{')));
+}
+
+// ─── Render helpers ───────────────────────────────────────────────────────────
+function fmt(m) { return m >= 1000 ? (m/1000).toFixed(0) + '' : m.toFixed(0); }
+function fmtKm(m) { return (m/1000).toFixed(0); }
+
+function getActivityIcon(type) {
+  const icons = { Run: '🏃', Ride: '🚴', Swim: '🏊', Walk: '🚶', Hike: '🥾', Workout: '💪' };
+  return icons[type] || '🏃';
+}
+
+function formatPace(activity) {
+  if (activity.type === 'Run' && activity.average_speed) {
+    const paceSecPerKm = 1000 / activity.average_speed;
+    const min = Math.floor(paceSecPerKm / 60);
+    const sec = Math.round(paceSecPerKm % 60);
+    return `${min}:${sec.toString().padStart(2,'0')}/km`;
+  }
+  if (activity.type === 'Ride' && activity.average_speed) {
+    return `${(activity.average_speed * 3.6).toFixed(1)} km/h`;
+  }
+  return '';
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en', { month: 'short', day: 'numeric' });
+}
+
+function renderActivities(activities) {
+  const list = document.getElementById('activityList');
+  if (!activities.length) {
+    list.innerHTML = '<div style="color: var(--muted); font-size: 13px;">No recent activities found.</div>';
+    return;
+  }
+  list.innerHTML = activities.slice(0, 6).map(a => {
+    const cls = (a.type || '').toLowerCase();
+    return `
+      <div class="activity-item">
+        <div class="activity-icon ${cls}">${getActivityIcon(a.type)}</div>
+        <div class="activity-info">
+          <div class="activity-name">${a.name || a.type || 'Activity'}</div>
+          <div class="activity-meta">${formatDate(a.start_date_local)} · ${Math.round((a.moving_time||0)/60)}min · ↑${Math.round(a.total_elevation_gain||0)}m</div>
+        </div>
+        <div class="activity-stats">
+          <div class="activity-dist" style="color: var(--${cls === 'ride' ? 'ride' : cls === 'swim' ? 'swim' : 'run'})">${((a.distance||0)/1000).toFixed(1)}</div>
+          <div class="activity-pace">${formatPace(a)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderWeeklyChart(activities) {
+  const chart = document.getElementById('weeklyChart');
+  // Group by week (last 4 weeks)
+  const now = new Date();
+  const weeks = [0,1,2,3].map(i => {
+    const start = new Date(now);
+    start.setDate(start.getDate() - (i+1)*7);
+    const end = new Date(now);
+    end.setDate(end.getDate() - i*7);
+    return { start, end, label: `W-${i+1}`, km: 0 };
+  }).reverse();
+
+  activities.forEach(a => {
+    const d = new Date(a.start_date_local);
+    for (const w of weeks) {
+      if (d >= w.start && d < w.end) {
+        w.km += (a.distance || 0) / 1000;
+        break;
+      }
+    }
+  });
+
+  const maxKm = Math.max(...weeks.map(w => w.km), 1);
+
+  chart.innerHTML = weeks.map((w, i) => {
+    const pct = Math.round((w.km / maxKm) * 90);
+    const colors = ['var(--run)', 'var(--ride)', 'var(--accent)', 'var(--accent2)'];
+    return `
+      <div class="bar-group" style="animation-delay: ${i*0.1}s">
+        <div class="bar" style="height: ${pct}px; background: ${colors[i]}; opacity: 0.8;"></div>
+        <div class="bar-label">${w.label}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderStats(stats) {
+  const run = stats.ytd_run_totals || {};
+  const ride = stats.ytd_ride_totals || {};
+  const allRun = stats.all_run_totals || {};
+  const recentRun = stats.recent_run_totals || {};
+  const recentRide = stats.recent_ride_totals || {};
+
+  const totalActivities = (run.count || 0) + (ride.count || 0);
+  const totalElev = ((recentRun.elevation_gain || 0) + (recentRide.elevation_gain || 0));
+
+  document.getElementById('totalActivities').textContent = (run.count || 0) + (ride.count||0) || '—';
+  document.getElementById('runDist').textContent = run.distance ? fmtKm(run.distance) : '—';
+  document.getElementById('rideDist').textContent = ride.distance ? fmtKm(ride.distance) : '—';
+  document.getElementById('totalElev').textContent = totalElev > 0 ? fmt(totalElev) : '—';
+}
+
+function renderCoaching(coaching) {
+  const el = document.getElementById('coachingText');
+  el.classList.remove('loading');
+  el.innerHTML = coaching.summary || 'Analysis complete.';
+
+  // Insights
+  const ig = document.getElementById('insightsGrid');
+  ig.style.display = 'grid';
+  document.getElementById('insightVolume').textContent = coaching.volumeTrend || '—';
+  document.getElementById('insightIntensity').textContent = coaching.intensityAdvice || '—';
+  document.getElementById('insightFocus').textContent = coaching.focusArea || '—';
+
+  // Week plan
+  const plan = document.getElementById('weekPlan');
+  if (coaching.weekPlan && coaching.weekPlan.length) {
+    const today = new Date().getDay(); // 0=Sun
+    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    plan.innerHTML = coaching.weekPlan.map((d, i) => {
+      const isToday = dayNames[today] === d.day;
+      const isRest = d.type === 'Rest';
+      return `
+        <div class="day-card ${isToday ? 'active' : ''} ${isRest ? 'rest' : ''}">
+          <div class="day-name">${d.day}</div>
+          <div class="day-icon">${d.icon}</div>
+          <div class="day-type">${d.description || d.type}</div>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+// ─── Main ─────────────────────────────────────────────────────────────────────
+async function main() {
+  const overlay = document.getElementById('loadingOverlay');
+  const errorDiv = document.getElementById('errorDiv');
+
+  // Animate dots
+  let dots = 0;
+  const dotInterval = setInterval(() => {
+    dots = (dots + 1) % 4;
+    document.getElementById('loadingDots').textContent = '.'.repeat(dots + 1);
+  }, 400);
+
+  try {
+    const { athlete, stats, activities } = await loadStravaStats();
+
+    // Render stats
+    renderStats(stats);
+    renderActivities(activities);
+    renderWeeklyChart(activities);
+
+    document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+
+    // Hide loader
+    clearInterval(dotInterval);
+    overlay.classList.add('hidden');
+
+    // Fetch coaching (can take a moment)
+    try {
+      const coaching = await fetchCoaching(athlete, stats, activities);
+      renderCoaching(coaching);
+    } catch(e) {
+      document.getElementById('coachingText').textContent =
+        'Keep building your aerobic base with consistent training. Aim for 3-4 sessions per week, mixing easy efforts with one quality workout. Prioritize recovery and listen to your body.';
+      document.getElementById('coachingText').classList.remove('loading');
+      console.warn('Coaching error:', e);
+    }
+
+  } catch(err) {
+    clearInterval(dotInterval);
+    overlay.classList.add('hidden');
+    errorDiv.style.display = 'block';
+    errorDiv.textContent = '⚠ ' + err.message + ' — Make sure Strava is connected in Claude settings.';
+  }
+}
+
+main();
+</script>
+</body>
+</html>
